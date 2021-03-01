@@ -1,3 +1,5 @@
+#[allow(unused_parens)]
+
 extern crate ncurses;
 
 use ncurses::*;
@@ -10,23 +12,35 @@ fn main() {
 
     curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
 
-    let mut pressed_char = 0;
-    let mut x = 0;
-    let mut y = 0;
-    let time_to_sleep = time::Duration::from_millis(1000);
+    let (mut x, mut y, mut max_x, mut max_y) = (0,0,0,0);
+    let (mut speed_x, mut speed_y) = (1,1);
+    let time_to_sleep = time::Duration::from_millis(100);
+    getmaxyx(stdscr(), &mut max_y, &mut max_x);
 
     loop {
         clear();
 
-        mvaddstr(x, y, "0");
-        // thread::sleep(time_to_sleep);
-        // x+=1;
-        // y+=1;
+        mvprintw(y,x,"0");
+        thread::sleep(time_to_sleep);
+
+        refresh();
+
+        if(x > max_x - 2){
+            speed_x = -1;
+        }
+        else if(x < 1){
+            speed_x = 1;
+        }
+
+        if(y > max_y - 2){
+            speed_y = -1;
+        }
+        else if(y < 1){
+            speed_y = 1;
+        }
+
+        x += speed_x;
+        y += speed_y;
     }
 
-
-
-    addstr("\nFinished");
-    getch();
-    endwin();
 }
